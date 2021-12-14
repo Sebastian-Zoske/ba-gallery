@@ -10,5 +10,10 @@ export default {
   components: {
     Gallery,
   },
+  data() {
+    return {
+      photos: {},
+    };
+  },
 };
 </script>
