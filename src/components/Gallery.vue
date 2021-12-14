@@ -38,7 +38,7 @@ export default {
       photos: {},
       page: 1,
       perPage: 30,
-      photoSize: "small",
+      photoSize: "full",
     };
   },
   created() {
