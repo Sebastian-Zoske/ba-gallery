@@ -12,7 +12,9 @@
         <option :value="5">5</option>
         <option :value="10">10</option>
         <option :value="20">20</option>
-        <option :value="30">30</option>
+        <option :value="50">50</option>
+        <option :value="100">100</option>
+        <option :value="200">200</option>
       </select>
     </li>
   </ul>
@@ -20,7 +22,13 @@
   <div class="gallery">
     <div class="gallery-panel" v-for="photo in photos" :key="photo.id">
       <router-link :to="`/photo/${photo.id}`">
-        <v-lazy-image :src="photo.urls[photoSize]" />
+        <img
+          alt="image"
+          :loading="loading"
+          :src="photo[photoSize]"
+          width="1280"
+        />
+        <!-- <v-lazy-image :src="photo.urls[photoSize]" /> -->
       </router-link>
     </div>
   </div>
@@ -28,17 +36,21 @@
 
 <script>
 import apiClient from "../http-common";
-import VLazyImage from "v-lazy-image";
+// import VLazyImage from "v-lazy-image";
 
 export default {
   name: "Gallery",
-  components: { VLazyImage },
+  // components: { VLazyImage },
   data() {
     return {
       photos: {},
       page: 1,
-      perPage: 30,
-      photoSize: "full",
+      pagesTotal: 1,
+      perPage: this.$route.query.perPage ? this.$route.query.perPage : 5,
+      photoSize: this.$route.query.photoSize
+        ? this.$route.query.photoSize
+        : "largeImageURL",
+      loading: this.$route.query.loading ? this.$route.query.loading : "eager",
     };
   },
   created() {
@@ -47,9 +59,12 @@ export default {
   methods: {
     async getPhotos(page, perPage) {
       await apiClient
-        .get(`photos?page=${page}&per_page=${perPage}`)
+        .get(`?key=25700624-812fa9db0aa07fd100f1c7c0e&per_page=${perPage}`)
+        // .get(`photos?page=${page}&per_page=${perPage}`)
         .then((res) => {
-          this.photos = res.data;
+          this.photos = res.data.hits;
+          this.pagesTotal = res.data.totalHits / this.perPage;
+          console.log("res.data.hits", res.data.hits);
         });
     },
     onChangeRecordsPerPage() {
@@ -70,17 +85,16 @@ export default {
 <style>
 .gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  /* grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); */
   grid-gap: 1rem;
-  max-width: 80rem;
-  margin: 5rem auto;
-  padding: 0 5rem;
+  /* max-width: 80rem; */
 }
 
 .gallery-panel img {
-  width: 100%;
-  height: 22vw;
-  object-fit: cover;
+  display: block;
+  /* width: 100%; */
+  /* height: 22vw; */
+  /* object-fit: cover; */
   border-radius: 0.75rem;
 }
 
@@ -98,7 +112,6 @@ ul li {
 }
 
 .showItems {
-  margin-left: -35px;
   font-size: 14px;
   font-weight: bold;
 }
