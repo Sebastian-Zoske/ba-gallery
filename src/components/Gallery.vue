@@ -6,7 +6,6 @@
           previous
         </a>
       </li>
-      <!-- <li v-for="i in photos.length" :key="i">{{ i }}</li> -->
       {{
         " | "
       }}
@@ -17,7 +16,6 @@
       <li>
         Show Items:
         <select @change="onChangeRecordsPerPage" v-model="perPage">
-          <option :value="10">10</option>
           <option :value="20">20</option>
           <option :value="50">50</option>
           <option :value="100">100</option>
@@ -28,46 +26,36 @@
   </div>
   <div class="gallery">
     <div class="gallery-panel" v-for="photo in photos" :key="photo.id">
-      <picture> </picture>
       <img
+        v-if="!useModule"
         alt="image"
         :loading="loading"
         :src="photo[photoSize]"
-        :width="photo[width] ? photo[width] : width"
-        :height="photo[height] ? photo[height] : height"
       />
 
-      <!-- <v-lazy-image
-        v-if="useModule"
-        id="img-module"
-        :src="photo.urls[photoSize]"
-        :width="photo[width] ? photo[width] : width"
-        :height="photo[height] ? photo[height] : height"
-      /> -->
+      <v-lazy-image v-if="useModule" :src="photo[photoSize]" />
     </div>
   </div>
 </template>
 
 <script>
 import apiClient from "../http-common";
-// import VLazyImage from "v-lazy-image";
+import VLazyImage from "v-lazy-image";
 
 export default {
   name: "Gallery",
-  // components: { VLazyImage },
+  components: { VLazyImage },
   data() {
     return {
       photos: {},
       page: 1,
       pagesTotal: 1,
-      perPage: this.$route.query.perPage ? this.$route.query.perPage : 10,
+      perPage: this.$route.query.perPage ? this.$route.query.perPage : 50,
       photoSize: this.$route.query.photoSize
         ? this.$route.query.photoSize
-        : "largeImageURL",
+        : "webformatURL",
       loading: this.$route.query.loading ? this.$route.query.loading : "eager",
-      useModule: this.$route.query.useModule
-        ? this.$route.query.useModule
-        : false,
+      useModule: this.$route.query.useModule === "true" ? true : false,
       width: "1280",
       height: "853",
     };
@@ -106,8 +94,8 @@ export default {
               this.photoSize = "webformatURL";
               // this.width = "webformatWidth";
               // this.height = "webformatHeight";
-              this.width = "previewWidth";
-              this.height = "previewHeight";
+              this.width = "640";
+              this.height = "427";
               break;
             case "small":
               this.photoSize = "previewURL";
